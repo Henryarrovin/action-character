@@ -1,17 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const videoRoutes = require('./routes/videoRoutes');
 
 const app = express();
+const port = 8082;
 
-// Middleware to parse JSON in the request body
-app.use(bodyParser.json());
-
-// POST route that replies with a simple JSON response
-app.get('/api/reply', (req, res) => {
-  res.json({ reply: `Hello` });
+mongoose.connect('mongodb://127.0.0.1:27017/action-character', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-const port = 8082;
+app.use('/api', videoRoutes);
+
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server listening at http://localhost:${port}`);
 });
