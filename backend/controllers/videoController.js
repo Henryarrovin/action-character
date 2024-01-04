@@ -17,6 +17,25 @@ async function getVideoByName(req, res) {
   }
 }
 
+async function getAllVideoNames(req, res) {
+  try {
+    const videoNames = await Video.find({}, 'name');
+
+    if (!videoNames || videoNames.length === 0) {
+      return res.status(404).json({ error: 'No videos found' });
+    }
+
+    const names = videoNames.map((video) => video.name);
+
+    res.json(names);
+  } catch (error) {
+    console.error('Error fetching all video names:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
 module.exports = {
   getVideoByName,
+  getAllVideoNames
 };
