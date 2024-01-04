@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Button, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Button, ScrollView } from 'react-native';
 import axios from 'axios';
 import { Video } from 'expo-av';
 
@@ -8,32 +8,50 @@ const { width, height } = Dimensions.get('window');
 const App = () => {
   const [videoUri, setVideoUri] = useState(null);
   const [shouldPlay, setShouldPlay] = useState(false);
+  const [names, setNames] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchNames = async () => {
       try {
-        const response = await axios.get('http://localhost:8082/api/videos/Walk', {
-          responseType: 'arraybuffer',
-        });
-
-        const videoBlob = new Blob([response.data], { type: 'video/mkv' });
-        const uri = URL.createObjectURL(videoBlob);
-
-        setVideoUri(uri);
+        const response = await axios.get('http://localhost:8082/api/names');
+        setNames(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching names:', error);
       }
     };
 
-    fetchData();
+    fetchNames();
   }, []);
 
-  const handlePlayButtonClick = () => {
-    setShouldPlay(true);
+  const fetchVideo = async (name) => {
+    try {
+      const response = await axios.get(`http://localhost:8082/api/videos/${name}`, {
+        responseType: 'arraybuffer',
+      });
+
+      const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+      const uri = URL.createObjectURL(videoBlob);
+
+      setVideoUri(uri);
+      setShouldPlay(true);
+    } catch (error) {
+      console.error('Error fetching video:', error);
+    }
   };
 
   const handleStopButtonClick = () => {
     setShouldPlay(false);
+  };
+
+  const renderButtons = () => {
+    return names.map((name, index) => (
+      <Button
+      key={index}
+      title={name}
+      onPress={() => fetchVideo(name)}
+      containerStyle={styles.buttonContainer}
+    />
+    ));
   };
 
   const renderVideo = () => {
@@ -44,20 +62,20 @@ const App = () => {
             source={{ uri: videoUri }}
             style={styles.video}
             useNativeControls
-            resizeMode="contain"
+            resizeMode="cover"
             shouldPlay={shouldPlay}
             isLooping
             onError={(error) => console.error('Video Error:', error)}
             onLoad={() => console.log('Video Loaded')}
           />
-          <View style={styles.contentContainer}>
-          </View>
           <Button title="Stop" onPress={handleStopButtonClick} />
         </View>
       );
     } else {
       return (
-        <Button title="Play Video" onPress={handlePlayButtonClick} />
+        <ScrollView horizontal style={styles.buttonContainer}>
+          {renderButtons()}
+        </ScrollView>
       );
     }
   };
@@ -82,10 +100,10 @@ const styles = StyleSheet.create({
   video: {
     flex: 1,
   },
-  contentContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+  buttonContainer: {
+    flexDirection: 'row',
+    margin: 200,
+    padding: 200,
   },
 });
 
