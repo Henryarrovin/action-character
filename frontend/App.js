@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Button, ScrollView } from 'react-native';
+import { View, StyleSheet, Button, ScrollView, ImageBackground } from 'react-native';
 import axios from 'axios';
 import { Video } from 'expo-av';
-
-const { width, height } = Dimensions.get('window');
 
 const App = () => {
   const [videoUri, setVideoUri] = useState(null);
@@ -46,11 +44,11 @@ const App = () => {
   const renderButtons = () => {
     return names.map((name, index) => (
       <Button
-      key={index}
-      title={name}
-      onPress={() => fetchVideo(name)}
-      containerStyle={styles.buttonContainer}
-    />
+        key={index}
+        title={name}
+        onPress={() => fetchVideo(name)}
+        containerStyle={styles.buttonContainer}
+      />
     ));
   };
 
@@ -68,42 +66,66 @@ const App = () => {
             onError={(error) => console.error('Video Error:', error)}
             onLoad={() => console.log('Video Loaded')}
           />
-          <Button title="Stop" onPress={handleStopButtonClick} />
+          <View style={styles.stopButtonContainer}>
+            <Button title="Stop" onPress={handleStopButtonClick} />
+          </View>
         </View>
       );
     } else {
       return (
-        <ScrollView horizontal style={styles.buttonContainer}>
-          {renderButtons()}
-        </ScrollView>
+        <View style={styles.buttonContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {renderButtons()}
+          </ScrollView>
+        </View>
       );
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('C:/Users/Henry/Desktop/action-character/frontend/Interface.jpg')}
+      style={styles.container}
+    >
       {renderVideo()}
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'gray',
     justifyContent: 'center',
     alignItems: 'center',
   },
   videoContainer: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   video: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
     flexDirection: 'row',
-    margin: 200,
-    padding: 200,
+    justifyContent: 'center',
+  },
+  stopButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+  },
+  button: {
+    marginHorizontal: 5,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: 'black',
+    color: 'white',
   },
 });
 

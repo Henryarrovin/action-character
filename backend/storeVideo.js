@@ -15,8 +15,8 @@ async function run() {
 
     const VideoModel = mongoose.model('videos', videoSchema);
 
-    const videoName = 'Hello';
-    const videoBuffer = await fs.readFile('C:/Users/Henry/Desktop/action-character/backend/0001-0061.mkv');
+    const videoName = 'Waving';
+    const videoBuffer = await fs.readFile('C:/Users/Henry/Desktop/action-character/Waving.mkv');
 
     const newVideo = new VideoModel({ name: videoName, video: videoBuffer });
 
